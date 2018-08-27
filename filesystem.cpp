@@ -9,6 +9,10 @@ void add_test_paths(std::vector<T> &paths)
 	paths.push_back(T("/../"));
 	paths.push_back(T("//./"));
 	paths.push_back(T("//../"));
+	paths.push_back(T("///./"));
+	paths.push_back(T("///../"));
+	paths.push_back(T("////./"));
+	paths.push_back(T("////../"));
 	paths.push_back(T("/././"));
 	paths.push_back(T("/../../"));
 	paths.push_back(T("/"));
