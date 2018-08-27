@@ -7,6 +7,10 @@ void add_test_paths(std::vector<T> &paths)
 {
 	paths.push_back(T("/./"));
 	paths.push_back(T("/../"));
+	paths.push_back(T("//./"));
+	paths.push_back(T("//../"));
+	paths.push_back(T("/././"));
+	paths.push_back(T("/../../"));
 	paths.push_back(T("/"));
 	paths.push_back(T("//"));
 	paths.push_back(T("///"));
@@ -34,22 +38,22 @@ void compare_test_paths(const std::vector<T> &paths)
 
 void test_std_filesystem()
 {
-	std::cout << "Standard Filesystem" << std::endl;
+	std::cout << "Standard Filesystem Test Start" << std::endl;
 	std::vector<std::filesystem::path> paths;
 	add_test_paths(paths);
 	print_test_paths(paths);
 	compare_test_paths(paths);
-	std::cout << "Standard Filesystem" << std::endl;
+	std::cout << "Standard Filesystem Test End" << std::endl;
 }
 
 void test_boost_filesystem()
 {
-	std::cout << "Boost Filesystem" << std::endl;
+	std::cout << "Boost Filesystem Test Start" << std::endl;
 	std::vector<boost::filesystem::path> paths;
 	add_test_paths(paths);
 	print_test_paths(paths);
 	compare_test_paths(paths);
-	std::cout << "Boost Filesystem" << std::endl;
+	std::cout << "Boost Filesystem Test End" << std::endl;
 }
 
 int main()
