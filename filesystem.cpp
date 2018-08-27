@@ -56,9 +56,29 @@ void test_boost_filesystem()
 	std::cout << "Boost Filesystem Test End" << std::endl;
 }
 
+void patch_test_paths(std::vector<boost::filesystem::path> &paths)
+{
+	for(size_t i = 0; i < paths.size() ; i++){
+		if(paths[i].generic_string().compare(0, 2, "//") == 0 && paths[i].generic_string().compare(0, 3, "///") != 0)
+			paths[i] = boost::filesystem::path(paths[i].generic_string().substr(1));
+	}
+}
+
+void test_patched_boost_filesystem()
+{
+	std::cout << "Patched Boost Filesystem Test Start" << std::endl;
+	std::vector<boost::filesystem::path> paths;
+	add_test_paths(paths);
+	patch_test_paths(paths);
+	print_test_paths(paths);
+	compare_test_paths(paths);
+	std::cout << "Patched Boost Filesystem Test End" << std::endl;
+}
+
 int main()
 {
 	test_std_filesystem();
 	test_boost_filesystem();
+	test_patched_boost_filesystem();
 	return 0;
 }
