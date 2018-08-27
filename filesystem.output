@@ -1,0 +1,21 @@
+Standard Filesystem
+"/"
+"/"
+"/"
+"/"
+"/"
+"/"
+Standard Filesystem
+Boost Filesystem
+"/"
+"/"
+"/"
+"/home/ych"
+"/"
+"/"
+"/./"is diffent from "//"
+"/../"is diffent from "//"
+"/"is diffent from "//"
+"//"is diffent from "///"
+"//"is diffent from "////"
+Boost Filesystem
