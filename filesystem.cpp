@@ -1,6 +1,24 @@
-#include<iostream>
-#include<filesystem>
+#include <iostream>
+#include <filesystem>
 #include <boost/filesystem.hpp>
+#include <boost/core/demangle.hpp>
+#include <boost/mp11.hpp>
+
+template<class T> std::string name()
+{
+    return boost::core::demangle( typeid(T).name() );
+}
+
+template <class T>
+void patch_test_paths(std::vector<T> &paths)
+{
+	if(name<T>() != "boost::filesystem::path")
+		return;
+	for(size_t i = 0; i < paths.size() ; i++){
+		if(paths[i].generic_string().compare(0, 2, "//") == 0 && paths[i].generic_string().compare(0, 3, "///") != 0)
+			paths[i] = T(paths[i].generic_string().substr(1));
+	}
+}
 
 template <class T>
 void add_test_paths(std::vector<T> &paths)
@@ -15,6 +33,8 @@ void add_test_paths(std::vector<T> &paths)
 	paths.push_back(T("////../"));
 	paths.push_back(T("/././"));
 	paths.push_back(T("/../../"));
+	paths.push_back(T("/..//..//"));
+	paths.push_back(T("/..///..///"));
 	paths.push_back(T("/"));
 	paths.push_back(T("//"));
 	paths.push_back(T("///"));
@@ -40,49 +60,22 @@ void compare_test_paths(const std::vector<T> &paths)
 	}
 }
 
-void test_std_filesystem()
+
+template<class T> void test_filesystem_path( boost::mp11::mp_list<T> const& )
 {
-	std::cout << "Standard Filesystem Test Start" << std::endl;
-	std::vector<std::filesystem::path> paths;
+	std::cout << name<T>() << " Test Start" << std::endl;
+	std::vector<T> paths;
 	add_test_paths(paths);
+	if(name<T>() == "boost::filesystem::path")
+		patch_test_paths(paths);
 	print_test_paths(paths);
 	compare_test_paths(paths);
-	std::cout << "Standard Filesystem Test End" << std::endl;
-}
-
-void test_boost_filesystem()
-{
-	std::cout << "Boost Filesystem Test Start" << std::endl;
-	std::vector<boost::filesystem::path> paths;
-	add_test_paths(paths);
-	print_test_paths(paths);
-	compare_test_paths(paths);
-	std::cout << "Boost Filesystem Test End" << std::endl;
-}
-
-void patch_test_paths(std::vector<boost::filesystem::path> &paths)
-{
-	for(size_t i = 0; i < paths.size() ; i++){
-		if(paths[i].generic_string().compare(0, 2, "//") == 0 && paths[i].generic_string().compare(0, 3, "///") != 0)
-			paths[i] = boost::filesystem::path(paths[i].generic_string().substr(1));
-	}
-}
-
-void test_patched_boost_filesystem()
-{
-	std::cout << "Patched Boost Filesystem Test Start" << std::endl;
-	std::vector<boost::filesystem::path> paths;
-	add_test_paths(paths);
-	patch_test_paths(paths);
-	print_test_paths(paths);
-	compare_test_paths(paths);
-	std::cout << "Patched Boost Filesystem Test End" << std::endl;
+	std::cout << name<T>() << " Test End" << std::endl;
 }
 
 int main()
 {
-	test_std_filesystem();
-	test_boost_filesystem();
-	test_patched_boost_filesystem();
+	using L = std::tuple<std::filesystem::path, boost::filesystem::path>;
+	boost::mp11::tuple_for_each( boost::mp11::mp_product<boost::mp11::mp_list, L>(), [](auto&& x){ test_filesystem_path(x); } );
 	return 0;
 }
